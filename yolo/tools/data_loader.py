@@ -139,11 +139,17 @@ class YoloDataset(Dataset):
         bboxes = []
         for seg_data in seg_data_one_img:
             cls = seg_data[0]
-            points = np.array(seg_data[1:]).reshape(-1, 2)
-            valid_points = points[(points >= 0) & (points <= 1)].reshape(-1, 2)
-            if valid_points.size > 1:
-                bbox = torch.tensor([cls, *valid_points.min(axis=0), *valid_points.max(axis=0)])
-                bboxes.append(bbox)
+            x, y, w, h = seg_data[1:]
+            x_min = x - w / 2
+            x_max = x + w / 2
+            y_min = y - h / 2
+            y_max = y + h / 2
+            bboxes.append(torch.tensor([cls, x_min, y_min, x_max, y_max]))
+            # points = np.array(seg_data[1:]).reshape(-1, 2)
+            # valid_points = points[(points >= 0) & (points <= 1)].reshape(-1, 2)
+            # if valid_points.size > 1:
+            #     bbox = torch.tensor([cls, *valid_points.min(axis=0), *valid_points.max(axis=0)])
+            #     bboxes.append(bbox)
 
         if bboxes:
             return torch.stack(bboxes)
@@ -230,6 +236,7 @@ def create_dataloader(data_cfg: DataConfig, dataset_cfg: DatasetConfig, task: st
         num_workers=data_cfg.cpu_num,
         pin_memory=data_cfg.pin_memory,
         collate_fn=collate_fn,
+        persistent_workers=True,
     )
 
 

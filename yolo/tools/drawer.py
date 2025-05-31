@@ -40,7 +40,7 @@ def draw_bboxes(
     draw = ImageDraw.Draw(img, "RGBA")
 
     try:
-        font = ImageFont.truetype("arial.ttf", int(label_size))
+        font = ImageFont.truetype("Arial Unicode.ttf", int(label_size))
     except IOError:
         font = ImageFont.load_default(int(label_size))
 

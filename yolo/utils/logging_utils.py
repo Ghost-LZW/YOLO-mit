@@ -25,6 +25,7 @@ from lightning.pytorch.callbacks import Callback, RichModelSummary, RichProgress
 from lightning.pytorch.callbacks.progress.rich_progress import CustomProgress
 from lightning.pytorch.loggers import TensorBoardLogger, WandbLogger
 from lightning.pytorch.utilities import rank_zero_only
+from lightning.pytorch.callbacks.early_stopping import EarlyStopping
 from omegaconf import ListConfig
 from rich import get_console, reconfigure
 from rich.console import Console, Group
@@ -282,6 +283,7 @@ def setup(cfg: Config):
     progress.append(YOLORichProgressBar())
     progress.append(YOLORichModelSummary())
     progress.append(ImageLogger())
+    progress.append(EarlyStopping(monitor="Loss/BoxLoss", mode="min", patience=50, check_finite=True))
     if cfg.use_tensorboard:
         loggers.append(TensorBoardLogger(log_graph="all", save_dir=save_path))
     if cfg.use_wandb:
